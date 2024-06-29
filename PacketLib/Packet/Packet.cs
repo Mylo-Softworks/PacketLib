@@ -30,7 +30,7 @@ public abstract class Packet<T> : ISerializableClass<Packet<T>>
 
     public virtual void ProcessClient() {}
     
-    public virtual void ProcessServer(ClientRef<ITransmitter> source) {}
+    public virtual void ProcessServer<T>(ClientRef<T> source) where T : TransmitterBase<T> {}
 }
 
 /// <summary>

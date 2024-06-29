@@ -4,11 +4,15 @@ using PacketLib.Util;
 
 namespace PacketLib.Base;
 
-public class NetworkClient<T> where T : ITransmitter
+using Packet = Packet<object>;
+
+public class NetworkClient<T> where T : TransmitterBase<T>
 {
-    private T _transmitter = Activator.CreateInstance<T>();
+    public readonly T Transmitter = Activator.CreateInstance<T>();
     
     public PacketRegistry Registry;
+    
+    public event EventHandler? ClientConnected;
 
     public NetworkClient(PacketRegistry registry)
     {
@@ -32,6 +36,15 @@ public class NetworkClient<T> where T : ITransmitter
 
     public void Connect(IPEndPoint ipEndPoint)
     {
-        
+        Transmitter.NewClientConnection += (sender, args) =>
+        {
+            ClientConnected?.Invoke(this, args);
+        };
+        Transmitter.Connect(ipEndPoint);
+    }
+
+    public void Send(Packet packet)
+    {
+        Transmitter.Send(stream => Registry.SerializePacket(packet, stream));
     }
 }

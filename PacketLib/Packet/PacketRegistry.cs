@@ -41,7 +41,7 @@ public class PacketRegistry
     // Format:
     // [size|packetID|data]
     // size = _packetIdSize + data.size
-    public void SerializePacket(Packet packet, Stream s)
+    public void SerializePacket<T>(Packet<T> packet, Stream s)
     {
         var id = _packets.FirstOrDefault(x => x.Value == packet.GetType()).Key;
         using var tempStream = new MemoryStream();

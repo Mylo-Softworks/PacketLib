@@ -5,9 +5,12 @@ using PacketLib.Util;
 namespace PacketLib.Base;
 
 public class NetworkServer<T> : IDisposable
-    where T : ITransmitter
+    where T : TransmitterBase<T>
 {
     public Dictionary<Guid, ClientRef<T>> Clients = new ();
+    public readonly T ServerTransmitter = Activator.CreateInstance<T>();
+
+    public event EventHandler<ClientRef<T>>? ClientConnected;
 
     public PacketRegistry Registry;
 
@@ -38,7 +41,48 @@ public class NetworkServer<T> : IDisposable
 
     public void Start(IPEndPoint ipEndPoint)
     {
+        ServerTransmitter.NewServerConnection += (sender, point, transmitter) => 
+        {
+            var clientGuid = Guid.NewGuid();
+            // var clientObj = (Activator.CreateInstance(typeof(ClientRef<T>), clientGuid, point, transmitter, this) as ClientRef<T>)!;
+            var transmitterObj = Activator.CreateInstance<T>();
+            var clientObj = new ClientRef<T>(clientGuid, point, transmitterObj, this);
+            Clients[clientGuid] = clientObj;
+            
+            ClientConnected?.Invoke(this, clientObj); // Trigger connection event
+        };
+        ServerTransmitter.Host(ipEndPoint);
+    }
+
+    public void SendToAll<T>(Packet<T> packet)
+    {
+        foreach (var client in Clients.Values)
+        {
+            client.Send(packet);
+        }
+    }
+
+    public bool SendToClient<T>(Packet<T> packet, Guid clientId)
+    {
+        var client = Clients.GetValueOrDefault(clientId);
+        if (client == null) return false;
+        client.Send(packet);
+        return true;
+    }
+    
+    public void Poll()
+    {
+        var removeQueue = new List<Guid>();
+        foreach (var client in Clients.Values)
+        {
+            client.Poll();
+            if (client.ShouldQueueRemove()) removeQueue.Add(client.Guid);
+        }
         
+        foreach (var guid in removeQueue)
+        {
+            Clients.Remove(guid);
+        }
     }
 
     public void Dispose()
