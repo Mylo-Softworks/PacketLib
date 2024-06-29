@@ -20,7 +20,7 @@ public abstract class Packet<T> : ISerializableClass<Packet<T>>
     {
         Serializer.Serialize(Payload, s);
     }
-
+    
     public Packet<T> Deserialize(Stream s)
     {
         Payload = Serializer.Deserialize<T>(s);
@@ -28,8 +28,17 @@ public abstract class Packet<T> : ISerializableClass<Packet<T>>
         return this;
     }
 
+    /// <summary>
+    /// Called when this packet is received by the client.
+    /// </summary>
+    /// <param name="client">The NetworkClient this packet was received on.</param>
     public virtual void ProcessClient<T>(NetworkClient<T> client) where T : TransmitterBase<T> {}
     
+    /// <summary>
+    /// Called whent his packet is received by the server.
+    /// </summary>
+    /// <param name="server">The NetworkServer this packet was received on.</param>
+    /// <param name="source">The ClientRef associated with the client which sent this packet.</param>
     public virtual void ProcessServer<T>(NetworkServer<T> server, ClientRef<T> source) where T : TransmitterBase<T> {}
 }
 

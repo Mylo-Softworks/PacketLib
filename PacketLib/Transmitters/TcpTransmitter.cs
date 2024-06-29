@@ -5,6 +5,9 @@ using PacketLib.Packet;
 
 namespace PacketLib.Transmitters;
 
+/// <summary>
+/// A transmitter which uses TcpClient for clients, and TcpListener for servers.
+/// </summary>
 public class TcpTransmitter : TransmitterBase<TcpTransmitter>
 {
     private TcpClient? _tcpClient = null;
@@ -52,6 +55,7 @@ public class TcpTransmitter : TransmitterBase<TcpTransmitter>
     protected override void DisconnectImpl()
     {
         _tcpClient?.Close();
+        _tcpClient = null;
     }
 
     protected override void SendImpl(Action<Stream> streamWrite)

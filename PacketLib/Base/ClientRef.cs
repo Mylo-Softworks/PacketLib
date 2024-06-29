@@ -10,13 +10,27 @@ namespace PacketLib.Base;
 public class ClientRef<T> : IDisposable
     where T : TransmitterBase<T>
 {
+    /// <summary>
+    /// The Guid associated with this ClientRef.
+    /// </summary>
     public Guid Guid;
+    
+    /// <summary>
+    /// The IPEndPoint associated with this ClientRef.
+    /// </summary>
     public IPEndPoint IpEndPoint;
+    
+    /// <summary>
+    /// The transmitter associated with this ClientRef.
+    /// </summary>
     public readonly T Transmitter;
 
+    /// <summary>
+    /// The NetworkServer associated with this ClientRef.
+    /// </summary>
     public NetworkServer<T> Server;
 
-    public ClientRef(Guid guid, IPEndPoint ipEndPoint, T transmitter, NetworkServer<T> server)
+    internal ClientRef(Guid guid, IPEndPoint ipEndPoint, T transmitter, NetworkServer<T> server)
     {
         Guid = guid;
         IpEndPoint = ipEndPoint;
@@ -29,16 +43,26 @@ public class ClientRef<T> : IDisposable
         Transmitter.Dispose();
     }
 
+    /// <summary>
+    /// Disconnect this client.
+    /// </summary>
     public void Disconnect()
     {
-        Transmitter.Send(stream => Server.Registry.SerializePacket(new Disconnect(), stream));
+        Transmitter.Disconnect(Server.Registry);
     }
     
+    /// <summary>
+    /// Send a packet to this client.
+    /// </summary>
+    /// <param name="packet">The packet to send.</param>
     public void Send<T>(Packet<T> packet)
     {
         Transmitter.Send(stream => Server.Registry.SerializePacket(packet, stream));
     }
 
+    /// <summary>
+    /// Process and read the current queue of packets.
+    /// </summary>
     public void Poll()
     {
         var result = Transmitter.Poll(Server.Registry);
@@ -50,5 +74,9 @@ public class ClientRef<T> : IDisposable
         }
     }
 
+    /// <summary>
+    /// Check if this transmitter should be removed (ClientRef only).
+    /// </summary>
+    /// <returns>true if the transmitter should be removed, otherwise false.</returns>
     public bool ShouldQueueRemove() => Transmitter.ShouldQueueRemove();
 }

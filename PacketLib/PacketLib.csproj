@@ -4,10 +4,27 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackageId>MyloSoftworks.PacketLib</PackageId>
+        <Title>PacketLib</Title>
+        <Authors>GitMylo</Authors>
+        <Description>Easy packet based networking on any protocol.</Description>
+        <Copyright>Mylo Softworks</Copyright>
+        <PackageProjectUrl>https://github.com/Mylo-Softworks/PacketLib</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/Mylo-Softworks/PacketLib/blob/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/Mylo-Softworks/PacketLib</RepositoryUrl>
+        <PackageReleaseNotes>packets, data transfer, network</PackageReleaseNotes>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DocumentationFile>bin\Debug\PacketLib.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MyloSoftworks.SerializeLib" Version="1.0.3" />
+        <PackageReference Include="MyloSoftworks.SerializeLib" Version="1.0.5" />
+        <None Include="bin\Debug\PacketLib.xml" Pack="true">
+            <PackageCopyToOutput>true</PackageCopyToOutput>
+        </None>
     </ItemGroup>
 
 </Project>

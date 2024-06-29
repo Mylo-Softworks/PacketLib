@@ -1,10 +1,11 @@
-﻿using System.Runtime.InteropServices;
-using PacketLib.Base;
-using SerializeLib.Attributes;
+﻿using PacketLib.Base;
 using SerializeLib.Interfaces;
 
 namespace PacketLib.Packet;
 
+/// <summary>
+/// A payload containing a Guid, manually serialized. Can also be used inside another payload.
+/// </summary>
 public class GuidPayload : ISerializableClass<GuidPayload>
 {
     public Guid Guid;
@@ -36,6 +37,7 @@ public class Connect : Packet<GuidPayload>
     public override void ProcessClient<T>(NetworkClient<T> client)
     {
         client.Guid = Payload.Guid; // Guid is now known
+        client.OnConnect();
     }
 }
 

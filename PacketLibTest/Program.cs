@@ -22,9 +22,9 @@ public static class Tests
             Console.WriteLine($"[Server] Client connected: {@ref.Guid}!");
         };
 
-        client.ClientConnected += (sender, @ref) =>
+        client.ClientConnected += (sender, guid) =>
         {
-            Console.WriteLine($"[Client] Client connected!");
+            Console.WriteLine($"[Client] Client connected! {guid}");
         };
         
         server.Start(1337);

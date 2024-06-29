@@ -4,6 +4,9 @@ using SerializeLib;
 
 namespace PacketLib.Packet;
 
+/// <summary>
+/// A registry containing registered packet ids and their corresponding types.
+/// </summary>
 public class PacketRegistry
 {
     private readonly Dictionary<ushort, Type> _packets = new()
@@ -17,17 +20,31 @@ public class PacketRegistry
 
     private ushort _lastIndex = 0;
     
+    /// <summary>
+    /// Register a packet type.
+    /// </summary>
+    /// <param name="packet">The packet type to register.</param>
     public void RegisterPacket(Type packet)
     {
         _packets.Add(_lastIndex++, packet);
     }
 
+    /// <summary>
+    /// Register a packet type at a specified index.
+    /// Counting will continue from this index.
+    /// </summary>
+    /// <param name="packet">The packet type to register.</param>
+    /// <param name="index">The index to register at.</param>
     public void ForceRegisterPacket(Type packet, ushort index)
     {
         _lastIndex = index;
         RegisterPacket(packet);
     }
 
+    /// <summary>
+    /// Register every Packet class found in the assembly.
+    /// </summary>
+    /// <param name="assembly">The assembly to register the Packet classes from.</param>
     public void RegisterAssembly(Assembly assembly)
     {
         assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(Packet<>))).ToList().ForEach(RegisterPacket);
@@ -40,6 +57,13 @@ public class PacketRegistry
     // Format:
     // [size|packetID|data]
     // size = _packetIdSize + data.size
+    
+    /// <summary>
+    /// Serialize a packet to the stream in the format [size|packetID|data].
+    /// </summary>
+    /// <param name="packet">The packet object to serialize.</param>
+    /// <param name="s">The stream to write to.</param>
+    /// <typeparam name="T">The packet payload, this doesn't have to be explicitly defined.</typeparam>
     public void SerializePacket<T>(Packet<T> packet, Stream s)
     {
         var id = _packets.FirstOrDefault(x => x.Value == packet.GetType()).Key;
@@ -59,6 +83,11 @@ public class PacketRegistry
     private MemoryStream _buffer = new MemoryStream();
     private int _currentSize = -1; // -1 if no size read yet
 
+    /// <summary>
+    /// Read all packet data and deserialize the packets found from the stream (NetworkStream supported).
+    /// </summary>
+    /// <param name="s">The stream to read from.</param>
+    /// <returns>Null if no packets could be deserialized, otherwise a list of all packets which have been deserialized.</returns>
     public List<dynamic>? ReadPacketDataUntilThisPoint(Stream s)
     {
         if (s is NetworkStream ns)
@@ -125,6 +154,12 @@ public class PacketRegistry
         return outList;
     }
 
+    /// <summary>
+    /// Deserialize a single packet based on it's id from a stream.
+    /// </summary>
+    /// <param name="s">The stream to read.</param>
+    /// <param name="type">The packet id registered in this PacketRegistry.</param>
+    /// <returns>A dynamic containing the deserialized packet.</returns>
     public dynamic DeserializePacket(Stream s, ushort type) =>
         Serializer.Deserialize(s, _packets[type])!;
     
