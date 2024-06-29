@@ -61,7 +61,7 @@ public class TcpTransmitter : TransmitterBase<TcpTransmitter>
         streamWrite(_tcpClient.GetStream());
     }
 
-    protected override List<Packet<object>>? PollImpl(PacketRegistry registry)
+    protected override List<dynamic>? PollImpl(PacketRegistry registry)
     {
         if (_tcpClient == null) return null;
 

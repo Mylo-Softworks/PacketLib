@@ -83,7 +83,7 @@ public abstract class TransmitterBase<Self> : IDisposable
         SendImpl(streamWrite);
     }
 
-    public List<Packet<object>>? Poll(PacketRegistry registry)
+    public List<dynamic>? Poll(PacketRegistry registry)
     {
         if (State == TransmitterState.Inactive) throw new InvalidOperationException("Transmitter is not active.");
 
@@ -114,7 +114,7 @@ public abstract class TransmitterBase<Self> : IDisposable
     
     protected abstract void SendImpl(Action<Stream> streamWrite);
     
-    protected abstract List<Packet<object>>? PollImpl(PacketRegistry registry);
+    protected abstract List<dynamic>? PollImpl(PacketRegistry registry);
     
     // Public abstract functions
 

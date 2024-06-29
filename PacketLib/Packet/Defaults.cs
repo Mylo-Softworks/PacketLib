@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using PacketLib.Base;
 using SerializeLib.Attributes;
 using SerializeLib.Interfaces;
 
@@ -32,7 +33,10 @@ public class GuidPayload : ISerializableClass<GuidPayload>
 /// </summary>
 public class Connect : Packet<GuidPayload>
 {
-    
+    public override void ProcessClient<T>(NetworkClient<T> client)
+    {
+        client.Guid = Payload.Guid; // Guid is now known
+    }
 }
 
 /// <summary>
@@ -43,5 +47,13 @@ public class Connect : Packet<GuidPayload>
 /// </summary>
 public class Disconnect : Packet<EmptyPayload>
 {
-    
+    public override void ProcessClient<T>(NetworkClient<T> client)
+    {
+        client.OnDisconnect();
+    }
+
+    public override void ProcessServer<T>(NetworkServer<T> server, ClientRef<T> source)
+    {
+        server.OnDisconnect(source);
+    }
 }

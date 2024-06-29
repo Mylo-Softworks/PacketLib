@@ -1,9 +1,8 @@
-﻿using System.Reflection;
+﻿using System.Net.Sockets;
+using System.Reflection;
 using SerializeLib;
 
 namespace PacketLib.Packet;
-
-using Packet = Packet<object>;
 
 public class PacketRegistry
 {
@@ -60,9 +59,19 @@ public class PacketRegistry
     private MemoryStream _buffer = new MemoryStream();
     private int _currentSize = -1; // -1 if no size read yet
 
-    public List<Packet>? ReadPacketDataUntilThisPoint(Stream s)
+    public List<dynamic>? ReadPacketDataUntilThisPoint(Stream s)
     {
-        s.CopyTo(_buffer); // This should be the only reference to s.
+        if (s is NetworkStream ns)
+        {
+            while (ns.DataAvailable)
+            {
+                _buffer.WriteByte((byte)ns.ReadByte()); // TODO: Improve performance
+            }
+        }
+        else
+        {
+            s.CopyTo(_buffer); // This should be the only reference to s.
+        }
 
         if (_currentSize == -1)
         {
@@ -104,7 +113,7 @@ public class PacketRegistry
 
         var packet = DeserializePacket(thisPacketStream, type);
         
-        var outList = new List<Packet>();
+        var outList = new List<dynamic>();
         outList.Add(packet);
 
         var recursiveResult = ReadPacketDataUntilThisPoint(s);
@@ -116,7 +125,7 @@ public class PacketRegistry
         return outList;
     }
 
-    public Packet DeserializePacket(Stream s, ushort type) =>
-        (Packet) Serializer.Deserialize(s, _packets[type])!;
+    public dynamic DeserializePacket(Stream s, ushort type) =>
+        Serializer.Deserialize(s, _packets[type])!;
     
 }

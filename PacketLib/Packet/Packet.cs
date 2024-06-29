@@ -28,9 +28,9 @@ public abstract class Packet<T> : ISerializableClass<Packet<T>>
         return this;
     }
 
-    public virtual void ProcessClient() {}
+    public virtual void ProcessClient<T>(NetworkClient<T> client) where T : TransmitterBase<T> {}
     
-    public virtual void ProcessServer<T>(ClientRef<T> source) where T : TransmitterBase<T> {}
+    public virtual void ProcessServer<T>(NetworkServer<T> server, ClientRef<T> source) where T : TransmitterBase<T> {}
 }
 
 /// <summary>

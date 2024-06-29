@@ -1,5 +1,8 @@
 ﻿# PacketLib
-A library for high level packet-based TCP/UDP networking in .net.
+A protocol-agnostic library for high level packet-based networking in .net.
+
+## Protocol agnostic?
+Protocols are defined as a class which implements `TransmitterBase`. The `TransmitterBase` class has functions for reading and writing the protocol. Including connecting and hosting.
 
 ## High level?
 PacketLib is high level as it allows developers to easily write and register new packets and start a server.
@@ -7,6 +10,9 @@ PacketLib is high level as it allows developers to easily write and register new
 ## Packet based?
 PacketLib uses classes named "Packets" which contain data to transfer over the selected communication protocol.  
 PacketLib takes an object-oriented approach, using [SerializeLib] to serialize and deserialize the data.
+
+# TODO:
+* Auto detect disconnects due to timeout (With a ping packet which also detects ping between client and server).
 
 # Technical
 

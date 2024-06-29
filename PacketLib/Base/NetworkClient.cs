@@ -4,15 +4,21 @@ using PacketLib.Util;
 
 namespace PacketLib.Base;
 
-using Packet = Packet<object>;
-
-public class NetworkClient<T> where T : TransmitterBase<T>
+public class NetworkClient<T> : IDisposable
+    where T : TransmitterBase<T>
 {
     public readonly T Transmitter = Activator.CreateInstance<T>();
     
     public PacketRegistry Registry;
+
+    public Guid? Guid;
     
     public event EventHandler? ClientConnected;
+    public event EventHandler? ClientDisconnected;
+
+    internal void OnDisconnect()
+        => ClientDisconnected?.Invoke(this, EventArgs.Empty);
+    
 
     public NetworkClient(PacketRegistry registry)
     {
@@ -43,8 +49,24 @@ public class NetworkClient<T> where T : TransmitterBase<T>
         Transmitter.Connect(ipEndPoint);
     }
 
-    public void Send(Packet packet)
+    public void Send<T>(Packet<T> packet)
     {
         Transmitter.Send(stream => Registry.SerializePacket(packet, stream));
+    }
+
+    public void Poll()
+    {
+        var result = Transmitter.Poll(Registry);
+        if (result == null) return;
+        
+        foreach (var packet in result)
+        {
+            packet.ProcessClient(this);
+        }
+    }
+
+    public void Dispose()
+    {
+        Transmitter.Dispose();
     }
 }

@@ -46,7 +46,7 @@ public class ClientRef<T> : IDisposable
         
         foreach (var packet in result)
         {
-            packet.ProcessServer(this);
+            packet.ProcessServer(Server, this);
         }
     }
 

@@ -11,6 +11,10 @@ public class NetworkServer<T> : IDisposable
     public readonly T ServerTransmitter = Activator.CreateInstance<T>();
 
     public event EventHandler<ClientRef<T>>? ClientConnected;
+    public event EventHandler<ClientRef<T>>? ClientDisconnected;
+    
+    internal void OnDisconnect(ClientRef<T> clientRef)
+        => ClientDisconnected?.Invoke(this, clientRef);
 
     public PacketRegistry Registry;
 
@@ -44,10 +48,11 @@ public class NetworkServer<T> : IDisposable
         ServerTransmitter.NewServerConnection += (sender, point, transmitter) => 
         {
             var clientGuid = Guid.NewGuid();
-            // var clientObj = (Activator.CreateInstance(typeof(ClientRef<T>), clientGuid, point, transmitter, this) as ClientRef<T>)!;
-            var transmitterObj = Activator.CreateInstance<T>();
-            var clientObj = new ClientRef<T>(clientGuid, point, transmitterObj, this);
+            
+            var clientObj = new ClientRef<T>(clientGuid, point, (transmitter as T)!, this);
             Clients[clientGuid] = clientObj;
+            
+            clientObj.Send(new Connect() {Payload = new GuidPayload(){Guid = clientGuid}});
             
             ClientConnected?.Invoke(this, clientObj); // Trigger connection event
         };
