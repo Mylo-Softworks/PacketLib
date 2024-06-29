@@ -1,9 +1,20 @@
-﻿namespace PacketLibTest;
+﻿using System.Net.Sockets;
+using System.Reflection;
+using PacketLib.Base;
+using PacketLib.Packet;
+using PacketLib.Transmitters;
 
-class Program
+namespace PacketLibTest;
+
+public static class Tests
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        Console.WriteLine("Hello, World!");
+        var reg = new PacketRegistry();
+        
+        reg.RegisterAssembly(Assembly.GetExecutingAssembly());
+
+        var server = new NetworkServer<TcpTransmitter>(reg);
+        var client = new NetworkClient<TcpTransmitter>(reg);
     }
 }

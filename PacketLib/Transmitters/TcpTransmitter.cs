@@ -1,8 +1,11 @@
 ﻿using PacketLib.Base;
 
-namespace PacketLib.Tcp;
+namespace PacketLib.Transmitters;
 
-public class TcpTransmitter : ITransmitter<System.Net.Sockets.TcpClient>
+public class TcpTransmitter : ITransmitter
 {
-    
+    public void Dispose()
+    {
+        
+    }
 }
