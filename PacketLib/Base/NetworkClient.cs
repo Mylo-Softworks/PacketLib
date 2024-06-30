@@ -131,6 +131,11 @@ public class NetworkClient<T> : IDisposable
         {
             packet.ProcessClient(this);
         }
+
+        if (Transmitter.ShouldQueueRemove()) // Check if the client has become invalid
+        {
+            OnDisconnect();
+        }
     }
 
     public void Dispose()
