@@ -6,7 +6,7 @@ using PacketLib.Packet;
 namespace PacketLib.Transmitters;
 
 /// <summary>
-/// A transmitter which uses TcpClient for clients, and TcpListener for servers.
+/// A transmitter for TCP which uses TcpClient for clients, and TcpListener for servers.
 /// </summary>
 public class TcpTransmitter : TransmitterBase<TcpTransmitter>
 {
@@ -47,7 +47,7 @@ public class TcpTransmitter : TransmitterBase<TcpTransmitter>
         var tcpClient = _tcpListener.EndAcceptTcpClient(result);
         
         var tcpClientTransmitter = new TcpTransmitter();
-        tcpClientTransmitter.InitClientRef(tcpClient);
+        tcpClientTransmitter.InitClientRef(tcpClient, Registry);
         
         OnNewServerConnection((tcpClient.Client.RemoteEndPoint as IPEndPoint)!, tcpClientTransmitter);
     }
@@ -65,11 +65,11 @@ public class TcpTransmitter : TransmitterBase<TcpTransmitter>
         streamWrite(_tcpClient.GetStream());
     }
 
-    protected override List<dynamic>? PollImpl(PacketRegistry registry)
+    protected override List<dynamic>? PollImpl()
     {
         if (_tcpClient == null) return null;
 
-        return registry.ReadPacketDataUntilThisPoint(_tcpClient.GetStream());
+        return Registry.ReadPacketDataUntilThisPoint(_tcpClient.GetStream());
     }
 
     public override bool IsConnected()
@@ -91,5 +91,7 @@ public class TcpTransmitter : TransmitterBase<TcpTransmitter>
     {
         _tcpClient?.Close();
         _tcpListener?.Stop();
+        _tcpClient = null;
+        _tcpListener = null;
     }
 }

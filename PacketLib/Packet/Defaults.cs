@@ -51,6 +51,7 @@ public class TimePayload
 /// Connect is a packet available both on client and server.
 /// 
 /// On client: Tells the client their Guid, and confirms a successful connection.
+/// On server: Connects to server, no actual data needs to be transferred, the server will recognise the connection and respond with a Connect packet.
 /// </summary>
 public class Connect : Packet<GuidPayload>
 {
@@ -58,6 +59,11 @@ public class Connect : Packet<GuidPayload>
     {
         client.Guid = Payload.Guid; // Guid is now known
         client.OnConnect();
+    }
+
+    public override void ProcessServer<T>(NetworkServer<T> server, ClientRef<T> source)
+    {
+        
     }
 }
 

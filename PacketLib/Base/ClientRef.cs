@@ -53,7 +53,7 @@ public class ClientRef<T> : IDisposable
     /// </summary>
     public void Disconnect()
     {
-        Transmitter.Disconnect(Server.Registry);
+        Transmitter.Disconnect();
     }
     
     /// <summary>
@@ -70,7 +70,7 @@ public class ClientRef<T> : IDisposable
     /// </summary>
     public void Poll()
     {
-        var result = Transmitter.Poll(Server.Registry);
+        var result = Transmitter.Poll();
         if (result == null) return;
         
         foreach (var packet in result)

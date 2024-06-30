@@ -7,19 +7,19 @@ namespace PacketLib.Packet;
 /// <summary>
 /// A registry containing registered packet ids and their corresponding types.
 /// </summary>
-public class PacketRegistry
+public class PacketRegistry : ICloneable
 {
-    private readonly Dictionary<ushort, Type> _packets = new()
+    private Dictionary<ushort, Type> _packets = new()
     {
         { 0, typeof(Connect) },
         { 1, typeof(Disconnect) },
         { 2, typeof(Ping) }
     };
 
-    int _packetIdSize = sizeof(ushort);
-    int _sizeHeaderSize = sizeof(int);
+    const int PacketIdSize = sizeof(ushort);
+    const int SizeHeaderSize = sizeof(int);
 
-    private ushort _lastIndex = 0;
+    private ushort _lastIndex = 3;
     
     /// <summary>
     /// Register a packet type.
@@ -48,7 +48,18 @@ public class PacketRegistry
     /// <param name="assembly">The assembly to register the Packet classes from.</param>
     public void RegisterAssembly(Assembly assembly)
     {
-        assembly.GetTypes().Where(t => t.IsSubclassOf(typeof(Packet<>))).ToList().ForEach(RegisterPacket);
+        assembly.GetTypes().Where(t => IsSubclassOfRawGeneric(typeof(Packet<>), t)).ToList().ForEach(RegisterPacket);
+    }
+    
+    static bool IsSubclassOfRawGeneric(Type generic, Type toCheck) {
+        while (toCheck != null && toCheck != typeof(object)) {
+            var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+            if (generic == cur) {
+                return true;
+            }
+            toCheck = toCheck.BaseType;
+        }
+        return false;
     }
     
     public Type this[ushort index] => _packets[index];
@@ -100,7 +111,13 @@ public class PacketRegistry
         }
         else
         {
-            s.CopyTo(_buffer); // This should be the only reference to s.
+            int lastByte = s.ReadByte();
+            while (lastByte != -1)
+            {
+                _buffer.WriteByte((byte)lastByte);
+                lastByte = s.ReadByte();
+            }
+            // s.CopyTo(_buffer); // This should be the only reference to s.
         }
 
         if (_currentSize == -1)
@@ -108,23 +125,23 @@ public class PacketRegistry
             // Check if size can be read
             _buffer.Seek(0, SeekOrigin.Begin);
             
-            if (_buffer.Length < _sizeHeaderSize) // Header not readable yet.
+            if (_buffer.Length < SizeHeaderSize) // Header not readable yet.
                 return null;
             
-            var buffer = new byte[_sizeHeaderSize];
-            _buffer.Read(buffer, 0, _sizeHeaderSize);
+            var buffer = new byte[SizeHeaderSize];
+            _buffer.Read(buffer, 0, SizeHeaderSize);
             _currentSize = BitConverter.ToInt32(buffer, 0);
         }
 
         // _currentSize won't be -1 now
-        var neededSize = _currentSize + _sizeHeaderSize; // since packet will be [size|rest]
+        var neededSize = _currentSize + SizeHeaderSize; // since packet will be [size|rest]
 
         if (_buffer.Length < neededSize) return null; // Full packet not readable yet.
 
         _currentSize = -1; // Don't forget to reset!
         
         // Full packet will be available now.
-        _buffer.Seek(_sizeHeaderSize, SeekOrigin.Begin); // Start after the header
+        _buffer.Seek(SizeHeaderSize, SeekOrigin.Begin); // Start after the header
         
         // Store the first neededSize packets in thisPacketStream, and remove them from the start of _buffer
         var writeBuffer = new byte[neededSize];
@@ -139,8 +156,8 @@ public class PacketRegistry
         var thisPacketStream = new MemoryStream(writeBuffer);
         thisPacketStream.Seek(0, SeekOrigin.Begin);
         // Read packet type
-        var typeBuffer = new byte[_packetIdSize];
-        thisPacketStream.Read(typeBuffer, 0, _packetIdSize); // Offset
+        var typeBuffer = new byte[PacketIdSize];
+        thisPacketStream.Read(typeBuffer, 0, PacketIdSize); // Offset
         var type = BitConverter.ToUInt16(typeBuffer, 0);
 
         var packet = DeserializePacket(thisPacketStream, type);
@@ -165,5 +182,20 @@ public class PacketRegistry
     /// <returns>A dynamic containing the deserialized packet.</returns>
     public dynamic DeserializePacket(Stream s, ushort type) =>
         Serializer.Deserialize(s, _packets[type])!;
-    
+
+    public object Clone()
+    {
+        var newMemoryStream = new MemoryStream();
+        var oldPosition = _buffer.Position;
+        _buffer.CopyTo(newMemoryStream);
+        _buffer.Position = oldPosition;
+        
+        return new PacketRegistry()
+        {
+            _packets = _packets.ToDictionary(x => x.Key, x => x.Value),
+            _buffer = newMemoryStream,
+            _currentSize = _currentSize,
+            _lastIndex = _lastIndex,
+        };
+    }
 }

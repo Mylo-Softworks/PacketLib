@@ -52,7 +52,7 @@ public class NetworkClient<T> : IDisposable
     /// <param name="registry">The PacketRegistry to associate with the server.</param>
     public NetworkClient(PacketRegistry registry)
     {
-        Registry = registry;
+        Registry = (PacketRegistry) registry.Clone();
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public class NetworkClient<T> : IDisposable
     /// <param name="ipEndPoint">The IPEndPoint to listen on.</param>
     public void Connect(IPEndPoint ipEndPoint)
     {
-        Transmitter.Connect(ipEndPoint);
+        Transmitter.Connect(ipEndPoint, Registry);
     }
 
     /// <summary>
@@ -124,7 +124,7 @@ public class NetworkClient<T> : IDisposable
             Send(Packet.Ping.CreateWithCurrent());
         }
         
-        var result = Transmitter.Poll(Registry);
+        var result = Transmitter.Poll();
         if (result == null) return;
         
         foreach (var packet in result)

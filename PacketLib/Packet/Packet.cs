@@ -14,16 +14,16 @@ public abstract class Packet<T> : ISerializableClass<Packet<T>>
     /// <summary>
     /// The data in this packet, must be serializable.
     /// </summary>
-    public T Payload = Activator.CreateInstance<T>();
+    public T Payload = default;
     
     public void Serialize(Stream s)
     {
-        Serializer.Serialize(Payload, s);
+        Serializer.SerializeValue(Payload, s);
     }
     
     public Packet<T> Deserialize(Stream s)
     {
-        Payload = Serializer.Deserialize<T>(s);
+        Payload = Serializer.DeserializeValue<T>(s);
         
         return this;
     }

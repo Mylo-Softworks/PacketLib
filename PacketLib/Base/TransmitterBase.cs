@@ -43,6 +43,8 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// The last known ping in milliseconds. -1 if unknown.
     /// </summary>
     public int Ping = -1;
+
+    public PacketRegistry Registry;
     
     /// <summary>
     /// The current state of the transmitter.
@@ -75,10 +77,12 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// Init with a preexisting transfer protocol. Used to init client refs on the server.
     /// </summary>
     /// <param name="transfer"></param>
-    public void InitClientRef(object transfer)
+    /// <param name="registry"></param>
+    public void InitClientRef(object transfer, PacketRegistry registry)
     {
         if (State != TransmitterState.Inactive) throw new InvalidOperationException("Transmitter is already active.");
         State = TransmitterState.Client;
+        Registry = (PacketRegistry) registry.Clone();
         InitClientRefImpl(transfer);
     }
     
@@ -86,10 +90,11 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// Connect to an IPEndPoint as a client.
     /// </summary>
     /// <param name="host"></param>
-    public void Connect(IPEndPoint host)
+    public void Connect(IPEndPoint host, PacketRegistry registry)
     {
         if (State != TransmitterState.Inactive) throw new InvalidOperationException("Transmitter is already active.");
         State = TransmitterState.Client;
+        Registry = (PacketRegistry) registry.Clone();
         ConnectImpl(host);
     }
 
@@ -97,23 +102,23 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// Start a server, this transmitter will be used as a server now.
     /// </summary>
     /// <param name="host"></param>
-    public void Host(IPEndPoint host)
+    public void Host(IPEndPoint host, PacketRegistry registry)
     {
         if (State != TransmitterState.Inactive) throw new InvalidOperationException("Transmitter is already active.");
         State = TransmitterState.Server;
+        Registry = (PacketRegistry) registry.Clone();
         HostImpl(host);
     }
 
     /// <summary>
     /// Disconnect the transmitter, most transmitters will become invalid after this.
     /// </summary>
-    /// <param name="registry">The registry associated with this transmitter's caller.</param>
     /// <exception cref="InvalidOperationException">If the transmitter isn't used yet.</exception>
-    public void Disconnect(PacketRegistry registry)
+    public void Disconnect()
     {
         if (State == TransmitterState.Inactive) throw new InvalidOperationException("Transmitter is not active.");
         State = TransmitterState.Inactive;
-        SendImpl(stream => registry.SerializePacket(new Disconnect(), stream)); // Send disconnect packet
+        SendImpl(stream => Registry.SerializePacket(new Disconnect(), stream)); // Send disconnect packet
         DisconnectImpl();
     }
 
@@ -132,14 +137,13 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// <summary>
     /// Get the current list of queued packets, or null if no packets are queued.
     /// </summary>
-    /// <param name="registry">The registry associated with this transmitter's caller.</param>
     /// <returns>A list of packets queued, or null if no packets are queued.</returns>
     /// <exception cref="InvalidOperationException">If the transmitter isn't used yet.</exception>
-    public List<dynamic>? Poll(PacketRegistry registry)
+    public List<dynamic>? Poll()
     {
         if (State == TransmitterState.Inactive) throw new InvalidOperationException("Transmitter is not active.");
 
-        return PollImpl(registry);
+        return PollImpl();
     }
 
     /// <summary>
@@ -196,9 +200,8 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// <summary>
     /// Perform the polling, should be done with registry.ReadPacketDataUntilThisPoint(stream);
     /// </summary>
-    /// <param name="registry">The registry associated with this transmitter's caller.</param>
     /// <returns>A list of packets queued, or null if no packets are queued.</returns>
-    protected abstract List<dynamic>? PollImpl(PacketRegistry registry);
+    protected abstract List<dynamic>? PollImpl();
     
     // Public abstract functions
 

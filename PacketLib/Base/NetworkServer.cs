@@ -51,7 +51,7 @@ public class NetworkServer<T> : IDisposable
     /// <param name="registry">The PacketRegistry to associate with the server.</param>
     public NetworkServer(PacketRegistry registry)
     {
-        Registry = registry;
+        Registry = (PacketRegistry) registry.Clone();
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ public class NetworkServer<T> : IDisposable
             
             ClientConnected?.Invoke(this, clientObj); // Trigger connection event
         };
-        ServerTransmitter.Host(ipEndPoint);
+        ServerTransmitter.Host(ipEndPoint, Registry);
     }
 
     /// <summary>
