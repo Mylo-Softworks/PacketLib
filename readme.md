@@ -1,4 +1,6 @@
-﻿# PacketLib
+﻿[![NuGet Downloads](https://img.shields.io/nuget/dt/MyloSoftworks.PacketLib)](https://www.nuget.org/packages/MyloSoftworks.PacketLib/) [![Read the Docs](https://img.shields.io/readthedocs/packetlib)](https://packetlib.readthedocs.io/)
+
+# PacketLib
 A protocol-agnostic library for high level packet-based networking in .net.
 
 ## Protocol agnostic?
