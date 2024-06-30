@@ -30,6 +30,21 @@ public abstract class TransmitterBase<Self> : IDisposable
     where Self : TransmitterBase<Self>
 {
     /// <summary>
+    /// If no ping packets have been received for this duration, treat as disconnected.
+    /// </summary>
+    public TimeSpan ConnectionTimeout = TimeSpan.FromSeconds(30);
+    
+    /// <summary>
+    /// The time the last ping was received at.
+    /// </summary>
+    public DateTimeOffset? LastPingTime = null;
+    
+    /// <summary>
+    /// The last known ping in milliseconds. -1 if unknown.
+    /// </summary>
+    public int Ping = -1;
+    
+    /// <summary>
     /// The current state of the transmitter.
     /// </summary>
     public TransmitterState State { get; private set; } = TransmitterState.Inactive;
@@ -126,6 +141,26 @@ public abstract class TransmitterBase<Self> : IDisposable
 
         return PollImpl(registry);
     }
+
+    /// <summary>
+    /// Check if this transmitter should be removed (ClientRef only).
+    /// </summary>
+    /// <returns>true if the transmitter should be removed, otherwise false.</returns>
+    public bool ShouldQueueRemove()
+    {
+        return CheckTimeout() || ShouldQueueRemoveImpl();
+    }
+    
+    /// <summary>
+    /// Check if client has timed out.
+    /// </summary>
+    /// <returns>true if client timed out, false if client has not timed out.</returns>
+    public bool CheckTimeout()
+    {
+        if (LastPingTime == null) return false; // Not initialized yet
+        
+        return (DateTimeOffset.UtcNow - LastPingTime) > ConnectionTimeout;
+    }
     
     // Abstract impls
 
@@ -183,7 +218,7 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// Check if this transmitter should be removed (ClientRef only).
     /// </summary>
     /// <returns>true if the transmitter should be removed, otherwise false.</returns>
-    public abstract bool ShouldQueueRemove();
+    public abstract bool ShouldQueueRemoveImpl();
     
     // Inherited functions
 

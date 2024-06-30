@@ -82,7 +82,7 @@ public class TcpTransmitter : TransmitterBase<TcpTransmitter>
         return _connectingAsyncResult != null && !IsConnected();
     }
 
-    public override bool ShouldQueueRemove()
+    public override bool ShouldQueueRemoveImpl()
     {
         return _tcpClient == null;
     }

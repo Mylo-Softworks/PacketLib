@@ -12,6 +12,11 @@ public class NetworkClient<T> : IDisposable
     where T : TransmitterBase<T>
 {
     /// <summary>
+    /// Gets the ping (in milliseconds) to the server.
+    /// </summary>
+    public int Ping => Transmitter.Ping;
+    
+    /// <summary>
     /// The transmitter associated with this client.
     /// </summary>
     public readonly T Transmitter = Activator.CreateInstance<T>();
@@ -96,12 +101,29 @@ public class NetworkClient<T> : IDisposable
     {
         Transmitter.Send(stream => Registry.SerializePacket(packet, stream));
     }
+    
+    /// <summary>
+    /// The interval at which pings should be sent.
+    /// </summary>
+    public TimeSpan PingInterval = TimeSpan.FromSeconds(1); // 1 ping per second default
+    private DateTimeOffset? _lastPingSendTime = null;
 
     /// <summary>
     /// Process and read the current queue of packets.
     /// </summary>
     public void Poll()
     {
+        var timeNow = DateTimeOffset.UtcNow;
+        // if (_lastPingSendTime == null)
+        // {
+        //     _lastPingSendTime = timeNow;
+        // }
+        if (Guid != null && (_lastPingSendTime == null || timeNow > _lastPingSendTime + PingInterval))
+        {
+            _lastPingSendTime = timeNow;
+            Send(Packet.Ping.CreateWithCurrent());
+        }
+        
         var result = Transmitter.Poll(Registry);
         if (result == null) return;
         

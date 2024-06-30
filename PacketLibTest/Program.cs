@@ -40,5 +40,11 @@ public static class Tests
         Thread.Sleep(100);
         
         server.Poll();
+        
+        Thread.Sleep(1000);
+        
+        client.Poll(); // Will send ping
+        server.Poll(); // Will receive client ping
+        client.Poll(); // Will receive server ping
     }
 }

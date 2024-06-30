@@ -14,7 +14,8 @@ PacketLib takes an object-oriented approach, using [SerializeLib] to serialize a
 # Usage
 
 ## Creating packets
-Packets are simply classes which inherit `Packet`.
+Packets are simply classes which inherit `Packet`. They contain a payload of which the type can be specified as the generic argument.
+Packets and payloads can have custom constructors, but there should always be one parameterless constructor. This is used for deserializing.
 ```csharp
 using PacketLib.Packet;
 using SerializeLib.Interfaces; // For payloads
@@ -65,7 +66,7 @@ reg.RegisterPacket(typeof(ExamplePacketWithoutPayload));
 reg.RegisterAssembly(Assembly.GetExecutingAssembly());
 ```
 
-## Creating a server
+## Creating and using a server
 ```csharp
 using PacketLib.Base; // Client and server classes
 using PacketLib.Transmitters; // Default transmitters
@@ -78,10 +79,20 @@ server.ClientConnected += (sender, @ref) =>
 };
 
 // To process the current queue of packets
-client.Poll();
+server.Poll();
+
+// To send a packet to all clients
+server.SendToAll(new ExamplePacketWithoutPayload());
+
+// Sending by ClientRef (called "client" here)
+client.Send(new ExamplePacketWithoutPayload());
+
+// Sending by Guid (called "Guid" here)
+// The result of this call is a boolean which indicates if the packet could actually be sent. (It won't send to a client which is not registered to this server.)
+var sent = server.SendToClient(new ExamplePacketWithoutPayload(), Guid);
 ```
 
-## Creating a client
+## Creating and using a client
 ```csharp
 using PacketLib.Base; // Client and server classes
 using PacketLib.Transmitters; // Default transmitters
@@ -95,10 +106,10 @@ client.ClientConnected += (sender, guid) =>
 
 // To process the current queue of packets
 client.Poll();
-```
 
-# TODO:
-* Auto detect disconnects due to timeout (With a ping packet which also detects ping between client and server).
+// To send a packet to the server
+client.Send(new ExamplePacketWithoutPayload());
+```
 
 # Technical
 

@@ -13,6 +13,7 @@ public class PacketRegistry
     {
         { 0, typeof(Connect) },
         { 1, typeof(Disconnect) },
+        { 2, typeof(Ping) }
     };
 
     int _packetIdSize = sizeof(ushort);
@@ -94,7 +95,7 @@ public class PacketRegistry
         {
             while (ns.DataAvailable)
             {
-                _buffer.WriteByte((byte)ns.ReadByte()); // TODO: Improve performance
+                _buffer.WriteByte((byte)ns.ReadByte());
             }
         }
         else
@@ -119,6 +120,8 @@ public class PacketRegistry
         var neededSize = _currentSize + _sizeHeaderSize; // since packet will be [size|rest]
 
         if (_buffer.Length < neededSize) return null; // Full packet not readable yet.
+
+        _currentSize = -1; // Don't forget to reset!
         
         // Full packet will be available now.
         _buffer.Seek(_sizeHeaderSize, SeekOrigin.Begin); // Start after the header

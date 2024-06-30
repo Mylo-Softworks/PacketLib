@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using PacketLib.Packet;
 using PacketLib.Util;
+using SerializeLib;
 
 namespace PacketLib.Base;
 
@@ -11,6 +12,11 @@ namespace PacketLib.Base;
 public class NetworkServer<T> : IDisposable
     where T : TransmitterBase<T>
 {
+    /// <summary>
+    /// Gets the ping (in milliseconds) to the server.
+    /// </summary>
+    public int Ping => ServerTransmitter.Ping;
+    
     /// <summary>
     /// A dictionary containing the clients and their ids.
     /// </summary>
@@ -145,8 +151,14 @@ public class NetworkServer<T> : IDisposable
             if (client.ShouldQueueRemove()) removeQueue.Add(client.Guid);
         }
         
-        foreach (var guid in removeQueue)
+        RemoveClients(removeQueue);
+    }
+
+    private void RemoveClients(List<Guid> clientGuids)
+    {
+        foreach (var guid in clientGuids)
         {
+            Clients.GetValueOrDefault(guid)?.Dispose();
             Clients.Remove(guid);
         }
     }

@@ -1,4 +1,5 @@
 ﻿using PacketLib.Base;
+using SerializeLib.Attributes;
 using SerializeLib.Interfaces;
 
 namespace PacketLib.Packet;
@@ -24,6 +25,25 @@ public class GuidPayload : ISerializableClass<GuidPayload>
         Guid = new Guid(buffer);
 
         return this;
+    }
+}
+
+/// <summary>
+/// A payload containing a timestamp.
+/// </summary>
+[SerializeClass]
+public class TimePayload
+{
+    /// <summary>
+    /// The timestamp.
+    /// </summary>
+    [SerializeField] public long Time;
+    
+    public TimePayload() {}
+
+    public TimePayload(long time)
+    {
+        Time = time;
     }
 }
 
@@ -57,5 +77,57 @@ public class Disconnect : Packet<EmptyPayload>
     public override void ProcessServer<T>(NetworkServer<T> server, ClientRef<T> source)
     {
         server.OnDisconnect(source);
+    }
+}
+
+/// <summary>
+/// A ping packet which indicates the ping between client and server.
+///
+/// On client: Compare the current time with the time in the packet to calculate the ping.
+/// On server: Compare the current time with the time in the packet to calculate the ping, then respond to the client with the current time.
+/// </summary>
+public class Ping : Packet<TimePayload>
+{
+    /// <summary>
+    /// Helper function to get the current timestamp for calculating ping.
+    /// </summary>
+    /// <returns>The current time in MS.</returns>
+    public static long GetCurrentTimeStamp()
+    {
+        return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    }
+
+    /// <summary>
+    /// Helper function to create a Ping packet with the current time.
+    /// </summary>
+    /// <returns>The created Ping packet.</returns>
+    public static Ping CreateWithCurrent() =>
+        new Ping
+        {
+            Payload = new TimePayload(GetCurrentTimeStamp())
+        };
+
+    /// <summary>
+    /// Calculate the ping on this packet.
+    /// </summary>
+    /// <returns>The calculated ping value.</returns>
+    public long Compare()
+    {
+        return GetCurrentTimeStamp() - Payload.Time;
+    }
+
+    public override void ProcessClient<T>(NetworkClient<T> client)
+    {
+        var ping = Compare();
+        client.Transmitter.Ping = (int) ping;
+        client.Transmitter.LastPingTime = DateTime.UtcNow;
+    }
+
+    public override void ProcessServer<T>(NetworkServer<T> server, ClientRef<T> source)
+    {
+        var ping = Compare();
+        source.Transmitter.Ping = (int) ping;
+        source.Transmitter.LastPingTime = DateTime.UtcNow;
+        source.Send(CreateWithCurrent()); // Reply
     }
 }

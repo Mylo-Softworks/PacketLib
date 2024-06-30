@@ -11,6 +11,11 @@ public class ClientRef<T> : IDisposable
     where T : TransmitterBase<T>
 {
     /// <summary>
+    /// Gets the ping (in milliseconds) to the server.
+    /// </summary>
+    public int Ping => Transmitter.Ping;
+    
+    /// <summary>
     /// The Guid associated with this ClientRef.
     /// </summary>
     public Guid Guid;
