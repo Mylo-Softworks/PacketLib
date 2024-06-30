@@ -59,7 +59,7 @@ public class NetworkServer<T> : IDisposable
     /// </summary>
     /// <param name="port">The port to listen on.</param>
     /// <param name="shareLocal">If the server should be shared over the local network.</param>
-    public void Start(int port, bool shareLocal = false)
+    public void Start(int port, bool shareLocal = true)
     {
         Start(shareLocal ? "0.0.0.0" : "127.0.0.1", port);
     }
