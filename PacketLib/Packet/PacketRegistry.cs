@@ -39,7 +39,7 @@ public class PacketRegistry : ICloneable
     public void ForceRegisterPacket(Type packet, ushort index)
     {
         _lastIndex = index;
-        RegisterPacket(packet);
+        _packets[_lastIndex++] = packet;
     }
 
     /// <summary>

@@ -12,8 +12,9 @@
         <PackageProjectUrl>https://github.com/Mylo-Softworks/PacketLib</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/Mylo-Softworks/PacketLib/blob/master/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Mylo-Softworks/PacketLib</RepositoryUrl>
-        <PackageReleaseNotes>packets, data transfer, network</PackageReleaseNotes>
+        <PackageReleaseNotes>Initial release</PackageReleaseNotes>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageTags>packets, data transfer, network</PackageTags>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
