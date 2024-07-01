@@ -60,11 +60,6 @@ public class Connect : Packet<GuidPayload>
         client.Guid = Payload.Guid; // Guid is now known
         client.OnConnect();
     }
-
-    public override void ProcessServer<T>(NetworkServer<T> server, ClientRef<T> source)
-    {
-        
-    }
 }
 
 /// <summary>

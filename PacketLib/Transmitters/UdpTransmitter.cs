@@ -59,7 +59,7 @@ public class UdpTransmitter : TransmitterBase<UdpTransmitter>
 
     protected override void SendImpl(Action<Stream> streamWrite)
     {
-        var stream = new MemoryStream();
+        using var stream = new MemoryStream();
         streamWrite(stream);
         var bytes = stream.ToArray();
 

@@ -114,11 +114,12 @@ public class NetworkClient<T> : IDisposable
     public void Poll()
     {
         var timeNow = DateTimeOffset.UtcNow;
-        // if (_lastPingSendTime == null)
-        // {
-        //     _lastPingSendTime = timeNow;
-        // }
-        if (Guid != null && (_lastPingSendTime == null || timeNow > _lastPingSendTime + PingInterval))
+        if (_lastPingSendTime == null)
+        {
+            _lastPingSendTime = timeNow;
+            Transmitter.LastPingTime = timeNow; // Don't disconnect immediately.
+        }
+        if (Guid != null && timeNow > _lastPingSendTime + PingInterval)
         {
             _lastPingSendTime = timeNow;
             Send(Packet.Ping.CreateWithCurrent());

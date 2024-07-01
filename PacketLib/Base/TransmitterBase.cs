@@ -51,14 +51,14 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// </summary>
     public TransmitterState State { get; private set; } = TransmitterState.Inactive;
 
-    public delegate void TransmitterStateChangedHandler(TransmitterBase<Self> sender, IPEndPoint endPoint, TransmitterBase<Self> newTransmitter);
+    public delegate void TransmitterStateChangedHandler(TransmitterBase<Self> sender, IPEndPoint? endPoint, TransmitterBase<Self> newTransmitter);
 
     /// <summary>
     /// Event which gets triggered if this is a server transmitter and a new client just connected.
     /// </summary>
     public event TransmitterStateChangedHandler? NewServerConnection;
 
-    protected void OnNewServerConnection(IPEndPoint endPoint, TransmitterBase<Self> newTransmitter)
+    protected void OnNewServerConnection(IPEndPoint? endPoint, TransmitterBase<Self> newTransmitter)
     {
         NewServerConnection?.Invoke(this, endPoint, newTransmitter);
     }
