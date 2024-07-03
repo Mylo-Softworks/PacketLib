@@ -41,7 +41,7 @@ class ExamplePacketWithoutPayload : Packet<EmptyPayload>
 // To create a payload, use serializelib to make the packet serializable.
 [SerializeClass]
 class ExamplePayload {
-    [SerializeField]
+    [SerializeField(0)]
     public int Number;
 }
 

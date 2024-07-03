@@ -12,9 +12,11 @@
         <PackageProjectUrl>https://github.com/Mylo-Softworks/PacketLib</PackageProjectUrl>
         <PackageLicenseUrl>https://github.com/Mylo-Softworks/PacketLib/blob/master/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Mylo-Softworks/PacketLib</RepositoryUrl>
-        <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+        <PackageReleaseNotes>Update 1.0.2
++ Update to SerializeLib 1.0.7</PackageReleaseNotes>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageTags>packets, data transfer, network</PackageTags>
+        <Version>1.0.2</Version>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -22,7 +24,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MyloSoftworks.SerializeLib" Version="1.0.5" />
+        <PackageReference Include="MyloSoftworks.SerializeLib" Version="1.0.7" />
         <None Include="bin\Debug\PacketLib.xml" Pack="true">
             <PackageCopyToOutput>true</PackageCopyToOutput>
         </None>

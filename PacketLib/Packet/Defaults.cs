@@ -37,7 +37,7 @@ public class TimePayload
     /// <summary>
     /// The timestamp.
     /// </summary>
-    [SerializeField] public long Time;
+    [SerializeField(0)] public long Time;
     
     public TimePayload() {}
 
