@@ -11,12 +11,12 @@ namespace PacketLib.Transmitters;
 public class UdpTransmitter : TransmitterBase<UdpTransmitter>
 {
     private UdpClient? _udpClient = null;
-    private IPEndPoint? _localIpEndpoint = null;
-    private IPEndPoint? _remoteIpEndpoint = null;
+    private EndPoint? _localIpEndpoint = null;
+    private EndPoint? _remoteIpEndpoint = null;
     
-    private Dictionary<IPEndPoint, UdpTransmitter> _createdClients = new ();
+    private Dictionary<EndPoint, UdpTransmitter> _createdClients = new ();
 
-    private UdpTransmitter AccessClient(IPEndPoint remoteEndPoint)
+    private UdpTransmitter AccessClient(EndPoint remoteEndPoint)
     {
         if (_createdClients.TryGetValue(remoteEndPoint, out var client))
             return client;
@@ -31,10 +31,10 @@ public class UdpTransmitter : TransmitterBase<UdpTransmitter>
     
     protected override void InitClientRefImpl(object transfer)
     {
-        (_remoteIpEndpoint, _udpClient) = (ValueTuple<IPEndPoint, UdpClient>)transfer;
+        (_remoteIpEndpoint, _udpClient) = (ValueTuple<EndPoint, UdpClient>)transfer;
     }
 
-    protected override void ConnectImpl(IPEndPoint host)
+    protected override void ConnectImpl(EndPoint host)
     {
         _udpClient = new UdpClient(0);
         _localIpEndpoint = _udpClient.Client.LocalEndPoint as IPEndPoint;
@@ -44,9 +44,9 @@ public class UdpTransmitter : TransmitterBase<UdpTransmitter>
         Send(stream => Registry.SerializePacket(new Connect(), stream));
     }
 
-    protected override void HostImpl(IPEndPoint host)
+    protected override void HostImpl(EndPoint host)
     {
-        _udpClient = new UdpClient(host);
+        _udpClient = new UdpClient(host as IPEndPoint);
         _localIpEndpoint = _udpClient.Client.LocalEndPoint as IPEndPoint;
         
         StartReceive();
@@ -63,7 +63,7 @@ public class UdpTransmitter : TransmitterBase<UdpTransmitter>
         streamWrite(stream);
         var bytes = stream.ToArray();
 
-        _udpClient.Send(bytes, bytes.Length, _remoteIpEndpoint);
+        _udpClient.Send(bytes, bytes.Length, _remoteIpEndpoint as IPEndPoint);
     }
 
     /// <summary>

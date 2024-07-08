@@ -20,10 +20,11 @@ public class TcpTransmitter : TransmitterBase<TcpTransmitter>
         _tcpClient = (TcpClient)transfer;
     }
 
-    protected override void ConnectImpl(IPEndPoint host)
+    protected override void ConnectImpl(EndPoint host)
     {
         _tcpClient = new TcpClient();
-        _connectingAsyncResult = _tcpClient.BeginConnect(host.Address, host.Port, ar =>
+        var host2 = host as IPEndPoint;
+        _connectingAsyncResult = _tcpClient.BeginConnect(host2.Address, host2.Port, ar =>
         {
             if (_connectingAsyncResult == null) return;
             
@@ -32,9 +33,9 @@ public class TcpTransmitter : TransmitterBase<TcpTransmitter>
         }, host);
     }
 
-    protected override void HostImpl(IPEndPoint host)
+    protected override void HostImpl(EndPoint host)
     {
-        _tcpListener = new TcpListener(host);
+        _tcpListener = new TcpListener(host as IPEndPoint);
         _tcpListener.Start();
 
         _tcpListener.BeginAcceptTcpClient(AcceptLoop, null);

@@ -23,7 +23,7 @@ public class ClientRef<T> : IDisposable
     /// <summary>
     /// The IPEndPoint associated with this ClientRef.
     /// </summary>
-    public IPEndPoint IpEndPoint;
+    public EndPoint EndPoint;
     
     /// <summary>
     /// The transmitter associated with this ClientRef.
@@ -35,10 +35,10 @@ public class ClientRef<T> : IDisposable
     /// </summary>
     public NetworkServer<T> Server;
 
-    internal ClientRef(Guid guid, IPEndPoint ipEndPoint, T transmitter, NetworkServer<T> server)
+    internal ClientRef(Guid guid, EndPoint endPoint, T transmitter, NetworkServer<T> server)
     {
         Guid = guid;
-        IpEndPoint = ipEndPoint;
+        EndPoint = endPoint;
         Transmitter = transmitter;
         Server = server;
     }

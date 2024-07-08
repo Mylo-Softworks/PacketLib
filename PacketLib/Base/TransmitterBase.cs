@@ -51,14 +51,14 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// </summary>
     public TransmitterState State { get; private set; } = TransmitterState.Inactive;
 
-    public delegate void TransmitterStateChangedHandler(TransmitterBase<Self> sender, IPEndPoint? endPoint, TransmitterBase<Self> newTransmitter);
+    public delegate void TransmitterStateChangedHandler(TransmitterBase<Self> sender, EndPoint? endPoint, TransmitterBase<Self> newTransmitter);
 
     /// <summary>
     /// Event which gets triggered if this is a server transmitter and a new client just connected.
     /// </summary>
     public event TransmitterStateChangedHandler? NewServerConnection;
 
-    protected void OnNewServerConnection(IPEndPoint? endPoint, TransmitterBase<Self> newTransmitter)
+    protected void OnNewServerConnection(EndPoint? endPoint, TransmitterBase<Self> newTransmitter)
     {
         NewServerConnection?.Invoke(this, endPoint, newTransmitter);
     }
@@ -87,10 +87,10 @@ public abstract class TransmitterBase<Self> : IDisposable
     }
     
     /// <summary>
-    /// Connect to an IPEndPoint as a client.
+    /// Connect to an EndPoint as a client.
     /// </summary>
     /// <param name="host"></param>
-    public void Connect(IPEndPoint host, PacketRegistry registry)
+    public void Connect(EndPoint host, PacketRegistry registry)
     {
         if (State != TransmitterState.Inactive) throw new InvalidOperationException("Transmitter is already active.");
         State = TransmitterState.Client;
@@ -102,7 +102,7 @@ public abstract class TransmitterBase<Self> : IDisposable
     /// Start a server, this transmitter will be used as a server now.
     /// </summary>
     /// <param name="host"></param>
-    public void Host(IPEndPoint host, PacketRegistry registry)
+    public void Host(EndPoint host, PacketRegistry registry)
     {
         if (State != TransmitterState.Inactive) throw new InvalidOperationException("Transmitter is already active.");
         State = TransmitterState.Server;
@@ -175,16 +175,16 @@ public abstract class TransmitterBase<Self> : IDisposable
     protected abstract void InitClientRefImpl(object transfer);
     
     /// <summary>
-    /// Connect to an IPEndPoint as a client.
+    /// Connect to an EndPoint as a client.
     /// </summary>
-    /// <param name="host">The IPEndPoint to connect to.</param>
-    protected abstract void ConnectImpl(IPEndPoint host);
+    /// <param name="host">The EndPoint to connect to.</param>
+    protected abstract void ConnectImpl(EndPoint host);
     
     /// <summary>
     /// Start a server, this transmitter will be used as a server now.
     /// </summary>
-    /// <param name="host">The IPEndPoint to host on.</param>
-    protected abstract void HostImpl(IPEndPoint host);
+    /// <param name="host">The EndPoint to host on.</param>
+    protected abstract void HostImpl(EndPoint host);
     
     /// <summary>
     /// Disconnect this transmitter.
