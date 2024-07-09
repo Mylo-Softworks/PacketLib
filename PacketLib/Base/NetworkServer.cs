@@ -106,7 +106,7 @@ public class NetworkServer<T> : IDisposable
             var clientObj = new ClientRef<T>(clientGuid, point, (transmitter as T)!, this);
             Clients[clientGuid] = clientObj;
             
-            clientObj.Send(new Connect() {Payload = new GuidPayload(){Guid = clientGuid}});
+            clientObj.Send(new Connect() {Payload = clientGuid});
             
             ClientConnected?.Invoke(this, clientObj); // Trigger connection event
         };

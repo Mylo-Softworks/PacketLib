@@ -5,30 +5,6 @@ using SerializeLib.Interfaces;
 namespace PacketLib.Packet;
 
 /// <summary>
-/// A payload containing a Guid, manually serialized. Can also be used inside another payload.
-/// </summary>
-public class GuidPayload : ISerializableClass<GuidPayload>
-{
-    public Guid Guid;
-
-    private int size = 16; // https://learn.microsoft.com/en-us/dotnet/api/system.guid.tobytearray
-    
-    public void Serialize(Stream s)
-    {
-        s.Write(Guid.ToByteArray());
-    }
-
-    public GuidPayload Deserialize(Stream s)
-    {
-        var buffer = new byte[size];
-        s.Read(buffer, 0, buffer.Length);
-        Guid = new Guid(buffer);
-
-        return this;
-    }
-}
-
-/// <summary>
 /// A payload containing a timestamp.
 /// </summary>
 [SerializeClass]
@@ -53,11 +29,11 @@ public class TimePayload
 /// On client: Tells the client their Guid, and confirms a successful connection.
 /// On server: Connects to server, no actual data needs to be transferred, the server will recognise the connection and respond with a Connect packet.
 /// </summary>
-public class Connect : Packet<GuidPayload>
+public class Connect : Packet<Guid>
 {
     public override void ProcessClient<T>(NetworkClient<T> client)
     {
-        client.Guid = Payload.Guid; // Guid is now known
+        client.Guid = Payload; // Guid is now known
         client.OnConnect();
     }
 }

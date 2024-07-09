@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Reflection;
+using PacketLib.SharedObject;
 using SerializeLib;
 
 namespace PacketLib.Packet;
@@ -9,6 +10,21 @@ namespace PacketLib.Packet;
 /// </summary>
 public class PacketRegistry : ICloneable
 {
+    private bool _setOverrides = false;
+    
+    private void RegisterSerializeOverrides()
+    {
+        if (_setOverrides) return;
+        
+        _setOverrides = true;
+        Serializer.RegisterOverride<GuidSerializeOverride, Guid>();
+    }
+
+    public PacketRegistry()
+    {
+        RegisterSerializeOverrides();
+    }
+    
     private Dictionary<ushort, Type> _packets = new()
     {
         { 0, typeof(Connect) },
