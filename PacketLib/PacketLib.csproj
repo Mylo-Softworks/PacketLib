@@ -24,7 +24,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MyloSoftworks.SerializeLib" Version="1.0.7" />
+        <PackageReference Include="MyloSoftworks.SerializeLib" Version="1.0.8" />
         <None Include="bin\Debug\PacketLib.xml" Pack="true">
             <PackageCopyToOutput>true</PackageCopyToOutput>
         </None>

@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLib", "PacketLib\Pack
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLibTest", "PacketLibTest\PacketLibTest.csproj", "{AA320E7E-98DA-40D8-BB17-DDFAED7F5DDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLib.RPC", "PacketLib.RPC\PacketLib.RPC.csproj", "{5D36E63D-8A4C-4464-B7DD-58790502DE27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketLib.SharedObject", "PacketLib.SharedObject\PacketLib.SharedObject.csproj", "{D070E6D9-65B6-4689-9A75-2F952B59E3DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{AA320E7E-98DA-40D8-BB17-DDFAED7F5DDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA320E7E-98DA-40D8-BB17-DDFAED7F5DDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA320E7E-98DA-40D8-BB17-DDFAED7F5DDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D36E63D-8A4C-4464-B7DD-58790502DE27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D36E63D-8A4C-4464-B7DD-58790502DE27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D36E63D-8A4C-4464-B7DD-58790502DE27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D36E63D-8A4C-4464-B7DD-58790502DE27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D070E6D9-65B6-4689-9A75-2F952B59E3DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D070E6D9-65B6-4689-9A75-2F952B59E3DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D070E6D9-65B6-4689-9A75-2F952B59E3DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D070E6D9-65B6-4689-9A75-2F952B59E3DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

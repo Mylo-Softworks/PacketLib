@@ -1,6 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Reflection;
-using PacketLib.SharedObject;
+using PacketLib.Util;
 using SerializeLib;
 
 namespace PacketLib.Packet;

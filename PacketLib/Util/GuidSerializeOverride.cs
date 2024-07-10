@@ -1,6 +1,6 @@
 ﻿using SerializeLib.Interfaces;
 
-namespace PacketLib.SharedObject;
+namespace PacketLib.Util;
 
 public class GuidSerializeOverride : ISerializableOverride<Guid>
 {

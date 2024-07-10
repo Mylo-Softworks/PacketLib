@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\PacketLib.RPC\PacketLib.RPC.csproj" />
+      <ProjectReference Include="..\PacketLib.SharedObject\PacketLib.SharedObject.csproj" />
       <ProjectReference Include="..\PacketLib\PacketLib.csproj" />
     </ItemGroup>
 
